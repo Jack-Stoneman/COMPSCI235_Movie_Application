@@ -5,12 +5,12 @@ from COMPSCI235_Movie_Application.moviefiles.datafilereaders.movie_file_csv_read
 
 class MemoryRepository(AbstractRepository):
 
-    def __init__(self):
-        reader = MovieFileCSVReader('datafiles/Data1000Movies.csv')
-        self.__movies = list(reader.dataset_of_movies)
-        self.__genres = list(reader.dataset_of_genres)
-        self.__actors = list(reader.dataset_of_actors)
-        self.__directors = list(reader.dataset_of_directors)
+    def __init__(self, data_path):
+        reader = MovieFileCSVReader(os.path.join(data_path, 'Data1000Movies.csv'))
+        self.__movies = reader.dataset_of_movies
+        self.__genres = reader.dataset_of_genres
+        self.__actors = reader.dataset_of_actors
+        self.__directors = reader.dataset_of_directors
 
     def get_movies(self):
         return self.__movies
