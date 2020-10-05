@@ -40,6 +40,7 @@ class MovieFileCSVReader:
                 for actor in actors:
                     movie.add_actor(Actor(actor))
                 movie.runtime_minutes = int(row['Runtime (Minutes)'])
+                movie.director = Director(row['Director'])
 
         return movie_set
 

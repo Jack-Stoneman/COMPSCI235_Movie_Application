@@ -22,24 +22,38 @@ class MemoryRepository(AbstractRepository):
                 result_list.append(movie)
         return result_list
 
-    def get_movie_by_genre(self, genre: Genre):
+    def get_movie_by_genre(self, genre: str):
+        genre_list = genre.split(", ")
         result_list = []
+        for i in range(len(genre_list)):
+            genre_list[i] = Genre(str(genre_list[i]))
         for movie in self.__movies:
-            if genre in movie.genres:
+            counter = 0
+            for genre in genre_list:
+                if genre in movie.genres:
+                    counter += 1
+                if counter == len(genre_list):
+                    result_list.append(movie)
+        return result_list
+
+    def get_movie_by_actor(self, actor: str):
+        actor_list = actor.split(", ")
+        result_list = []
+        for i in range(len(actor_list)):
+            actor_list[i] = Actor(str(actor_list[i]))
+        for movie in self.__movies:
+            counter = 0
+            for actor in actor_list:
+                if actor in movie.actors:
+                    counter += 1
+            if counter == len(actor_list):
                 result_list.append(movie)
         return result_list
 
-    def get_movie_by_actor(self, actor: Actor):
+    def get_movie_by_director(self, director: str):
         result_list = []
         for movie in self.__movies:
-            if actor in movie.actors:
-                result_list.append(movie)
-        return result_list
-
-    def get_movie_by_director(self, director: Director):
-        result_list = []
-        for movie in self.__movies:
-            if movie.director == director:
+            if movie.director == Director(director):
                 result_list.append(movie)
         return result_list
 
@@ -58,8 +72,6 @@ class MemoryRepository(AbstractRepository):
 
     def get_directors(self):
         return self.__directors
-
-
 
 
 

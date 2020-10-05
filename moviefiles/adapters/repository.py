@@ -22,17 +22,17 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_movie_by_genre(self, genre: Genre):
-        """ Searches for movies based on genre """
+    def get_movie_by_genre(self, genre: str):
+        """ Searches for movies based on genre (allows AND-based searching) """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_movie_by_actor(self, actor: Actor):
-        """ Searches for movies based on starring actor """
+    def get_movie_by_actor(self, actor: str):
+        """ Searches for movies based on starring actor (allows AND-based searching) """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_movie_by_director(self, director: Director):
+    def get_movie_by_director(self, director: str):
         """ Searches for movies based on director """
         raise NotImplementedError
 
