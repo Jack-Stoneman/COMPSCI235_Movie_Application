@@ -12,8 +12,11 @@ class MemoryRepository(AbstractRepository):
         self.__actors = reader.dataset_of_actors
         self.__directors = reader.dataset_of_directors
 
-    def get_movies(self):
-        return self.__movies
+    def get_movie(self, title: str, release_year: str):
+        for movie in self.__movies:
+            if movie == Movie(title, int(release_year)):
+                return movie
+        return None
 
     def get_movie_by_title(self, title: str):
         result_list = []

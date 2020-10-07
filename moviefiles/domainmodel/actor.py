@@ -12,6 +12,10 @@ class Actor:
     def actor(self) -> str:
         return self.__actor_full_name
 
+    @property
+    def colleague_list(self) -> list:
+        return self.__colleague_list
+
     def __repr__(self):
         return f"<Actor {self.__actor_full_name}>"
 
