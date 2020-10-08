@@ -30,3 +30,7 @@ def test_movie_retrieval_by_director(in_memory_repo):
 def test_movie_retrieval_by_year(in_memory_repo):
     movie_list = in_memory_repo.get_movie_by_year('2012')
     print(movie_list)
+
+def test_genre_retrieval(in_memory_repo):
+    genre_list = in_memory_repo.get_genres()
+    print(genre_list)
