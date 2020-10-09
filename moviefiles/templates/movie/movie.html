@@ -4,7 +4,7 @@
 
 <main id="main">
     <header id="movie-header">
-        <h1>Search Results</h1>
+        <h1>{{title}}</h1>
     </header>
 
     <nav style="clear:both">
@@ -36,7 +36,7 @@
 
     {% for movie in movies %}
     <h2>{{movie.title}}, {{movie.release_year}}</h2>
-    <h3>Genres: <span>{% for genre in movie.genres %} {{genre}} {% endfor %}</span></h3>
+    <h3>Genres: {% for genre in movie.genres %} {{genre}}   {% endfor %}</h3>
     <p>{{movie.description}}</p>
     <br>
     {% endfor %}
