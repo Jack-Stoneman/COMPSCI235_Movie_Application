@@ -21,5 +21,9 @@ def create_app(test_config=None):
         from .home import home
         app.register_blueprint(home.home_blueprint)
 
+        from .movies import movies
+        app.register_blueprint(movies.movie_blueprint)
+
+
 
     return app

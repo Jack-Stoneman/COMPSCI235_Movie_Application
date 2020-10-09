@@ -6,6 +6,10 @@ from COMPSCI235_Movie_Application.moviefiles.domainmodel.movie import Movie, Act
 class NonExistentMovieException(Exception):
     pass
 
+def get_movies(repo: AbstractRepository):
+    movies = repo.get_movies()
+    return movies_to_dict(movies)
+
 def get_movie(title: str, release_year: int, repo: AbstractRepository):
     movie = repo.get_movie(title, release_year)
 

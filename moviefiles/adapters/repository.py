@@ -12,6 +12,11 @@ class RepositoryException(Exception):
 class AbstractRepository(abc.ABC):
 
     @abc.abstractmethod
+    def get_movies(self):
+        """ Gets all movies """
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_movie(self, title: str, release_year: str):
         """Searches for a movie"""
         raise NotImplementedError
