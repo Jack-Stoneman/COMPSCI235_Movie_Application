@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <form method="POST" action=" {{ handler_url }} ">
+        {{ form.csrf_token }}
+        <div> {{ form.director.label }} {{ form.director }} </div>
+        {{ form.submit }}
+    </form>
+    <br>
+    <p>{{message}}</p>
+
+{% endblock %}

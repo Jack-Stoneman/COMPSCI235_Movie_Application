@@ -111,8 +111,8 @@ def movie_search():
             handler_url = url_for('movie_bp.movie_search')
         )
 
-@movie_blueprint.route('/movies_by_genre', methods =['GET', 'POST'])
-def movies_by_genre():
+@movie_blueprint.route('/genre_search', methods =['GET', 'POST'])
+def genre_search():
 
     form = GenreSearchForm()
 
@@ -130,12 +130,17 @@ def movies_by_genre():
 
             first_movie_url = None
             previous_movie_url = None
-            next_movie_url = url_for('movie_bp.genre', cursor=0 + movies_per_page, genre=genre)
+            next_movie_url = None
+            last_movie_url = None
 
-            last_cursor = movies_per_page * int(len(movies) / movies_per_page)
-            if len(movies) % movies_per_page == 0:
-                last_cursor -= movies_per_page
-            last_movie_url = url_for('movie_bp.genre', cursor=last_cursor, genre=genre)
+            if movies_per_page < len(movies):
+
+                next_movie_url = url_for('movie_bp.genre', cursor=0 + movies_per_page, genre=genre)
+
+                last_cursor = movies_per_page * int(len(movies) / movies_per_page)
+                if len(movies) % movies_per_page == 0:
+                    last_cursor -= movies_per_page
+                last_movie_url = url_for('movie_bp.genre', cursor=last_cursor, genre=genre)
 
             return render_template(
                 'movie/movie.html',
@@ -150,14 +155,14 @@ def movies_by_genre():
             return render_template(
                 'movie/movies_by_genre.html',
                 form = form,
-                handler_url = url_for('movie_bp.movies_by_genre'),
+                handler_url = url_for('movie_bp.genre_search'),
                 message = "Sorry, there are no listed movies in that genre."
             )
     else:
         return render_template(
             'movie/movies_by_genre.html',
             form = form,
-            handler_url = url_for('movie_bp.movies_by_genre')
+            handler_url = url_for('movie_bp.genre_search')
         )
 
 @movie_blueprint.route('/genre', methods=['GET'])
@@ -206,7 +211,203 @@ def genre():
             next_movie_url=next_movie_url
         )
 
+@movie_blueprint.route('/actor_search', methods=['GET', 'POST'])
+def actor_search():
 
+    form = ActorSearchForm()
+
+    title = "Movies by Actor"
+
+    if form.validate_on_submit():
+
+        actor = form.actor.data
+
+        movies_per_page = 5
+
+        try:
+            movies = services.get_movie_by_actor(actor, repo.repo_instance)
+            movies_to_show = movies[: movies_per_page]
+
+            first_movie_url = None
+            previous_movie_url = None
+            next_movie_url = None
+            last_movie_url = None
+
+            if movies_per_page < len(movies):
+                next_movie_url = url_for('movie_bp.actor', cursor=0 + movies_per_page, actor=actor)
+
+                last_cursor = movies_per_page * int(len(movies) / movies_per_page)
+                if len(movies) % movies_per_page == 0:
+                    last_cursor -= movies_per_page
+                last_movie_url = url_for('movie_bp.actor', cursor=last_cursor, actor=actor)
+
+            return render_template(
+                'movie/movie.html',
+                movies=movies,
+                title=title,
+                previous_movie_url=previous_movie_url,
+                first_movie_url=first_movie_url,
+                last_movie_url=last_movie_url,
+                next_movie_url=next_movie_url
+            )
+        except services.NonExistentMovieException:
+            return render_template(
+                'movie/movies_by_actor.html',
+                form = form,
+                handler_url = url_for('movie_bp.actor_search'),
+                message = "Sorry, there are no listed movies for that actor."
+            )
+    else:
+        return render_template(
+            'movie/movies_by_actor.html',
+            form = form,
+            handler_url = url_for('movie_bp.actor_search')
+        )
+
+@movie_blueprint.route('/actor', methods=['GET'])
+def actor():
+
+    title = "Movies by Actor"
+
+    movies_per_page = 5
+
+    cursor = request.args.get('cursor')
+    actor = request.args.get('actor')
+
+    if cursor is None:
+        cursor = 0
+    else:
+        cursor = int(cursor)
+
+    if actor is not None:
+
+        total_movies = services.get_movie_by_actor(actor, repo.repo_instance)
+        movies = total_movies[cursor:cursor + movies_per_page]
+
+        first_movie_url = None
+        previous_movie_url = None
+        last_movie_url = None
+        next_movie_url = None
+
+        if cursor > 0:
+            previous_movie_url = url_for('movie_bp.actor', cursor=cursor - movies_per_page, actor=actor)
+            first_movie_url = url_for('movie_bp.actor', actor=actor)
+
+        if cursor + movies_per_page < len(total_movies):
+            next_movie_url = url_for('movie_bp.actor', cursor=cursor + movies_per_page, actor=actor)
+
+            last_cursor = movies_per_page * int(len(total_movies) / movies_per_page)
+            if len(total_movies) % movies_per_page == 0:
+                last_cursor -= movies_per_page
+            last_movie_url = url_for('movie_bp.actor', cursor=last_cursor, actor=actor)
+        return render_template(
+            'movie/movie.html',
+            movies=movies,
+            title=title,
+            previous_movie_url=previous_movie_url,
+            first_movie_url=first_movie_url,
+            last_movie_url=last_movie_url,
+            next_movie_url=next_movie_url
+        )
+
+@movie_blueprint.route('/director_search', methods=['GET', 'POST'])
+def director_search():
+
+    form = DirectorSearchForm()
+
+    title = "Movies by Director"
+
+    if form.validate_on_submit():
+
+        director = form.director.data
+
+        movies_per_page = 5
+
+        try:
+            movies = services.get_movie_by_director(director, repo.repo_instance)
+            movies_to_show = movies[: movies_per_page]
+
+            first_movie_url = None
+            previous_movie_url = None
+            next_movie_url = None
+            last_movie_url = None
+
+            if movies_per_page < len(movies):
+                next_movie_url = url_for('movie_bp.director', cursor=0 + movies_per_page, director=director)
+
+                last_cursor = movies_per_page * int(len(movies) / movies_per_page)
+                if len(movies) % movies_per_page == 0:
+                    last_cursor -= movies_per_page
+                last_movie_url = url_for('movie_bp.director', cursor=last_cursor, director=director)
+
+            return render_template(
+                'movie/movie.html',
+                movies=movies,
+                title=title,
+                previous_movie_url=previous_movie_url,
+                first_movie_url=first_movie_url,
+                last_movie_url=last_movie_url,
+                next_movie_url=next_movie_url
+            )
+        except services.NonExistentMovieException:
+            return render_template(
+                'movie/movies_by_director.html',
+                form = form,
+                handler_url = url_for('movie_bp.director_search'),
+                message = "Sorry, there are no listed movies for that director."
+            )
+    else:
+        return render_template(
+            'movie/movies_by_director.html',
+            form = form,
+            handler_url = url_for('movie_bp.director_search')
+        )
+
+@movie_blueprint.route('/director', methods=['GET'])
+def director():
+
+    title = "Movies by Director"
+
+    movies_per_page = 5
+
+    cursor = request.args.get('cursor')
+    director = request.args.get('director')
+
+    if cursor is None:
+        cursor = 0
+    else:
+        cursor = int(cursor)
+
+    if director is not None:
+
+        total_movies = services.get_movie_by_director(director, repo.repo_instance)
+        movies = total_movies[cursor:cursor + movies_per_page]
+
+        first_movie_url = None
+        previous_movie_url = None
+        last_movie_url = None
+        next_movie_url = None
+
+        if cursor > 0:
+            previous_movie_url = url_for('movie_bp.director', cursor=cursor - movies_per_page, director=director)
+            first_movie_url = url_for('movie_bp.director', director=director)
+
+        if cursor + movies_per_page < len(total_movies):
+            next_movie_url = url_for('movie_bp.director', cursor=cursor + movies_per_page, director=director)
+
+            last_cursor = movies_per_page * int(len(total_movies) / movies_per_page)
+            if len(total_movies) % movies_per_page == 0:
+                last_cursor -= movies_per_page
+            last_movie_url = url_for('movie_bp.director', cursor=last_cursor, director=director)
+        return render_template(
+            'movie/movie.html',
+            movies=movies,
+            title=title,
+            previous_movie_url=previous_movie_url,
+            first_movie_url=first_movie_url,
+            last_movie_url=last_movie_url,
+            next_movie_url=next_movie_url
+        )
 
 class MovieSearchForm(FlaskForm):
 
