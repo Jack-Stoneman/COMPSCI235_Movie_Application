@@ -2,9 +2,9 @@
 
 {% block content %}
 
-<main id="main">
+<main>
     <header id="movie-header">
-        <h1>{{title}}</h1>
+        <h1 id="title">{{title}}</h1>
     </header>
 
     <nav style="clear:both">
@@ -12,32 +12,34 @@
                 {% if first_movie_url is not none %}
                     <button class="btn-general" onclick="location.href='{{first_movie_url}}'">First</button>
                 {% else %}
-                    <button class="btn-general-disabled" disabled>First</button>
+                    <button class="btn-general" disabled>First</button>
                 {% endif %}
                 {% if previous_movie_url is not none %}
                     <button class="btn-general" onclick="location.href='{{previous_movie_url}}'">Previous</button>
                 {% else %}
-                    <button class="btn-general-disabled" disabled>Previous</button>
+                    <button class="btn-general" disabled>Previous</button>
                 {% endif %}
             </div>
             <div style="float:right">
                 {% if next_movie_url is not none %}
                     <button class="btn-general" onclick="location.href='{{next_movie_url}}'">Next</button>
                 {% else %}
-                    <button class="btn-general-disabled" disabled>Next</button>
+                    <button class="btn-general" disabled>Next</button>
                 {% endif %}
                 {% if last_movie_url is not none %}
                     <button class="btn-general" onclick="location.href='{{last_movie_url}}'">Last</button>
                 {% else %}
-                    <button class="btn-general-disabled" disabled>Last</button>
+                    <button class="btn-general" disabled>Last</button>
                 {% endif %}
             </div>
         </nav>
 
     {% for movie in movies %}
     <h2>{{movie.title}}, {{movie.release_year}}</h2>
-    <h3>Genres: {% for genre in movie.genres %} {{genre}}   {% endfor %}</h3>
-    <p>{{movie.description}}</p>
+    <h3>Starring: {% for actor in movie.actors %} {{actor}}{{",  "if not loop.last}} {% endfor %}</h3>
+    <h3>Directed by: {{movie.director}}</h3>
+    <h3>Genres: {% for genre in movie.genres %} {{genre}}{{",  " if not loop.last}} {% endfor %}</h3>
+    <p class="desc">{{movie.description}}</p>
     <br>
     {% endfor %}
 

@@ -5,25 +5,25 @@ from COMPSCI235_Movie_Application.moviefiles.datafilereaders.movie_file_csv_read
 
 class MemoryRepository(AbstractRepository):
 
-    def __init__(self, data_path):
-        reader = MovieFileCSVReader(os.path.join(data_path, 'Data1000Movies.csv'))
-        self.__movies = reader.dataset_of_movies
-        self.__genres = reader.dataset_of_genres
-        self.__actors = reader.dataset_of_actors
-        self.__directors = reader.dataset_of_directors
+    def __init__(self):
+        self._movies = list()
+        self._genres = list()
+        self._actors = list()
+        self._directors = list()
+        self._users = list()
 
     def get_movies(self):
-        return self.__movies
+        return self._movies
 
     def get_movie(self, title: str, release_year: int):
-        for movie in self.__movies:
+        for movie in self._movies:
             if movie == Movie(title, int(release_year)):
                 return movie
         return None
 
     def get_movie_by_title(self, title: str):
         result_list = []
-        for movie in self.__movies:
+        for movie in self._movies:
             if movie.title == title:
                 result_list.append(movie)
         return result_list
@@ -33,7 +33,7 @@ class MemoryRepository(AbstractRepository):
         result_list = []
         for i in range(len(genre_list)):
             genre_list[i] = Genre(str(genre_list[i]))
-        for movie in self.__movies:
+        for movie in self._movies:
             counter = 0
             for genre in genre_list:
                 if genre in movie.genres:
@@ -47,7 +47,7 @@ class MemoryRepository(AbstractRepository):
         result_list = []
         for i in range(len(actor_list)):
             actor_list[i] = Actor(str(actor_list[i]))
-        for movie in self.__movies:
+        for movie in self._movies:
             counter = 0
             for actor in actor_list:
                 if actor in movie.actors:
@@ -58,26 +58,33 @@ class MemoryRepository(AbstractRepository):
 
     def get_movie_by_director(self, director: str):
         result_list = []
-        for movie in self.__movies:
+        for movie in self._movies:
             if movie.director == Director(director):
                 result_list.append(movie)
         return result_list
 
     def get_movie_by_year(self, release_year: int):
         result_list = []
-        for movie in self.__movies:
+        for movie in self._movies:
             if movie.release_year == int(release_year):
                 result_list.append(movie)
         return result_list
 
     def get_genres(self):
-        return self.__genres
+        return self._genres
 
     def get_actors(self):
-        return self.__actors
+        return self._actors
 
     def get_directors(self):
-        return self.__directors
+        return self._directors
 
+def populate(data_path, repo: MemoryRepository):
+    reader = MovieFileCSVReader(data_path)
+    reader.read_csv_file()
+    repo._movies = reader.dataset_of_movies
+    repo._genres = reader.dataset_of_genres
+    repo._actors = reader.dataset_of_actors
+    repo._directors = reader.dataset_of_directors
 
 

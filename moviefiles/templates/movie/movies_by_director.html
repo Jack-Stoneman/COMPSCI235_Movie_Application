@@ -4,8 +4,8 @@
 
     <form method="POST" action=" {{ handler_url }} ">
         {{ form.csrf_token }}
-        <div> {{ form.director.label }} {{ form.director }} </div>
-        {{ form.submit }}
+        <div> {{ form.director.label(class_="form-field") }} {{ form.director }} </div>
+        {{ form.submit(class_="btn-general") }}
     </form>
     <br>
     <p>{{message}}</p>

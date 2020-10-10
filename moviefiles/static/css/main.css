@@ -11,7 +11,8 @@ html {
   background-color: #333;
   overflow: hidden;
   width: 100%;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .topnav a {
@@ -20,7 +21,7 @@ html {
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  font-size: 17px;
+  font-size: 20px;
 }
 
 .topnav a:hover {
@@ -31,22 +32,57 @@ html {
 .content {
   text-align: center;
   background-color: white;
-  width = 75%
+  margin-right: 100px;
+  margin-left: 100px;
+  border-radius: 4px;
+  padding: 10px;
 }
 
 .btn-general {
-  padding: 10px;
-  margin: 5px;
+  padding: 8px 8px 8px 8px;
+  margin: 10px;
   border-radius: 4px;
-  background-color: #556B2F;
+  border: none;
+  background-color: #333;
+  color: white;
+  font-size: 16px;
 }
 
-.btn-general-disabled {
-  padding: 10px;
-  margin: 5px;
+.btn-general:hover{
+  padding: 8px 8px 8px 8px;
+  margin: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #333;
+  filter: brightness(60%);
+  color: white;
+  font-size: 16px;
+}
+
+.btn-general:disabled {
+  padding: 8px 8px 8px 8px;
+  margin: 10px;
   border-radius: 4px
-  background-color: #556B2F;
-  #opacity: 0.6;
+  border: none;
+  background-color: #333;
+  color: white;
+  font-size: 16px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.form-field {
+  font-weight: bold;
+  padding: 5px;
+}
+
+.home {
+  font-size: 24px;
+}
+
+.desc {
+  margin-left: 200px;
+  margin-right: 200px;
 }
 
 #header {
@@ -60,4 +96,18 @@ html {
 #content-2 {
   background-color: #556B2F;
   overflow: hidden;
+}
+
+#movie-header {
+  padding: 15px;
+  background-color: #556B2F;
+  color: white;
+  border-radius: 4px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#title {
+  font-size: 40px;
+  font-weight: normal;
 }
