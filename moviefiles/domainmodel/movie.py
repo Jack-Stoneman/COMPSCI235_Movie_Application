@@ -6,83 +6,83 @@ class Movie:
 
     def __init__(self, title: str, release_year: int):
         if title == "" or type(title) is not str:
-            self.__title = None
+            self._title = None
         else:
-            self.__title = title
+            self._title = title
         if type(release_year) is not int:
-            self.__release_year = None
+            self._release_year = None
         if release_year < 1900:
-            self.__release_year = None
+            self._release_year = None
         else:
-            self.__release_year = release_year
-        self.__description = None
-        self.__director = None
-        self.__actors = []
-        self.__genres = []
-        self.__runtime_minutes = None
+            self._release_year = release_year
+        self._description = None
+        self._director = None
+        self._actors = []
+        self._genres = []
+        self._runtime_minutes = None
 
     @property
     def title(self) -> str:
-        return self.__title.strip()
+        return self._title.strip()
 
     @property
     def release_year(self) -> int:
-        return self.__release_year
+        return self._release_year
 
     def __repr__(self):
-        return f"<Movie {self.__title}, {str(self.__release_year)}>"
+        return f"<Movie {self._title}, {str(self._release_year)}>"
 
     def __eq__(self, other):
         if type(other) is Movie:
-            return self.__title == other.title and self.__release_year == other.release_year
+            return self._title == other.title and self._release_year == other.release_year
         else:
             return False
 
     def __lt__(self, other):
         if type(other) is Movie:
-            if self.__title == other.title:
-                return self.__release_year < other.release_year
+            if self._title == other.title:
+                return self._release_year < other.release_year
             else:
-                return self.__title < other.title
+                return self._title < other.title
         else:
             return False
 
     def __hash__(self):
-        return hash((self.__title, self.__release_year))
+        return hash((self._title, self._release_year))
 
     @property
     def description(self) -> str:
-        return self.__description
+        return self._description
 
     @description.setter
     def description(self, description):
         if description == "" or type(description) is not str:
-            self.__description = None
+            self._description = None
         else:
-            self.__description = description.strip()
+            self._description = description.strip()
 
     @property
     def director(self) -> Director:
-        return self.__director
+        return self._director
 
     @director.setter
     def director(self, director):
         if type(director) is not Director:
-            self.__director = None
+            self._director = None
         else:
-            self.__director = director
+            self._director = director
 
     @property
     def actors(self) -> list:
-        return self.__actors
+        return self._actors
 
     @property
     def genres(self) -> list:
-        return self.__genres
+        return self._genres
 
     @property
     def runtime_minutes(self) -> int:
-        return self.__runtime_minutes
+        return self._runtime_minutes
 
     @runtime_minutes.setter
     def runtime_minutes(self, runtime_minutes):
@@ -91,18 +91,18 @@ class Movie:
         elif runtime_minutes < 0:
             raise ValueError
         else:
-            self.__runtime_minutes = runtime_minutes
+            self._runtime_minutes = runtime_minutes
 
     def add_actor(self, actor):
         if actor == "" or type(actor) is not Actor:
             pass
         else:
-            self.__actors.append(actor)
+            self._actors.append(actor)
 
     def remove_actor(self, actor):
         try:
-            actor_index = self.__actors.index(actor)
-            self.__actors.pop(actor_index)
+            actor_index = self._actors.index(actor)
+            self._actors.pop(actor_index)
         except ValueError:
             pass
 
@@ -110,12 +110,12 @@ class Movie:
         if genre == "" or type(genre) is not Genre:
             pass
         else:
-            self.__genres.append(genre)
+            self._genres.append(genre)
 
     def remove_genre(self, genre):
         try:
-            genre_index = self.__genres.index(genre)
-            self.__genres.pop(genre_index)
+            genre_index = self._genres.index(genre)
+            self._genres.pop(genre_index)
         except ValueError:
             pass
 

@@ -4,6 +4,10 @@ import os
 
 from flask import Flask
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, clear_mappers
+from sqlalchemy.pool import NullPool
+
 import COMPSCI235_Movie_Application.moviefiles.adapters.repository as repo
 from COMPSCI235_Movie_Application.moviefiles.adapters.memory_repository import MemoryRepository, populate
 
@@ -14,8 +18,13 @@ def create_app(test_config=None):
     app.config.from_object('config.Config')
     data_path = os.path.join('moviefiles', 'adapters', 'datafiles', 'Data1000Movies.csv')
 
-    repo.repo_instance = MemoryRepository()
-    populate(data_path, repo.repo_instance)
+    if test_config is not None:
+        app.config.from_mapping(test_config)
+        data_path = app.config['TEST_DATA_PATH']
+
+    if app.config['REPOSITORY'] == 'memory':
+        repo.repo_instance = MemoryRepository()
+        populate(data_path, repo.repo_instance)
 
 
     with app.app_context():
