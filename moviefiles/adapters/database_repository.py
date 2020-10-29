@@ -59,7 +59,7 @@ class SqlAlchemyRepository(AbstractRepository):
         self._session_cm.reset_session()
 
     def get_movies(self) -> List[Movie]:
-        movies = self._session_cm.query(Movie).all()
+        movies = self._session_cm.session.query(Movie).all()
 
         return movies
 
@@ -75,7 +75,7 @@ class SqlAlchemyRepository(AbstractRepository):
 
     def get_movie_by_title(self, title: str) -> List[Movie]:
         try:
-            movies = self._session_cm.query(Movie).filter(Movie._title == title).all()
+            movies = self._session_cm.session.query(Movie).filter(Movie._title == title).all()
         except NoResultFound:
             movies = []
 
@@ -85,7 +85,7 @@ class SqlAlchemyRepository(AbstractRepository):
         genre_list = genre.split(", ")
         genre_ids = list()
         for genre in genre_list:
-            row = self._session_cm.execute('SELECT id FROM genres WHERE name = :genre', {'genre': genre}).fetchone()
+            row = self._session_cm.session.execute('SELECT id FROM genres WHERE name = :genre', {'genre': genre}).fetchone()
 
             if row is not None:
                 genre_ids.append(row[0])
@@ -95,7 +95,7 @@ class SqlAlchemyRepository(AbstractRepository):
             movie_dict = {}
             movie_ids = []
             for id in genre_ids:
-                rows = self._session_cm.execute('SELECT movie_id FROM movie_genre WHERE genre_id = :id', {'id': id}).all()
+                rows = self._session_cm.session.execute('SELECT movie_id FROM movie_genre WHERE genre_id = :id', {'id': id}).all()
                 for row in rows:
                     if row[0] in movie_dict:
                         movie_dict[row[0]].append(id)
@@ -104,14 +104,14 @@ class SqlAlchemyRepository(AbstractRepository):
             for movie in movie_dict:
                 if len(movie_dict[movie]) == len(genre_ids):
                     movie_ids.append(movie)
-            movies = self._session_cm.query(Movie).filter(Movie._id.in_(movie_ids)).all()
+            movies = self._session_cm.session.query(Movie).filter(Movie._id.in_(movie_ids)).all()
             return movies
 
     def get_movie_by_actor(self, actor: str) -> List[Movie]:
         actor_list = actor.split(", ")
         actor_ids = list()
         for actor in actor_list:
-            row = self._session_cm.execute('SELECT id FROM actors WHERE name = :actor', {'actor': actor}).fetchone()
+            row = self._session_cm.session.execute('SELECT id FROM actors WHERE name = :actor', {'actor': actor}).fetchone()
 
             if row is not None:
                 actor_ids.append(row[0])
@@ -121,7 +121,7 @@ class SqlAlchemyRepository(AbstractRepository):
             movie_dict = {}
             movie_ids = []
             for id in actor_ids:
-                rows = self._session_cm.execute('SELECT movie_id FROM movie_actor WHERE actor_id = :id',
+                rows = self._session_cm.session.execute('SELECT movie_id FROM movie_actor WHERE actor_id = :id',
                                                 {'id': id}).all()
                 for row in rows:
                     if row[0] in movie_dict:
@@ -131,20 +131,20 @@ class SqlAlchemyRepository(AbstractRepository):
             for movie in movie_dict:
                 if len(movie_dict[movie]) == len(actor_ids):
                     movie_ids.append(movie)
-            movies = self._session_cm.query(Movie).filter(Movie._id.in_(movie_ids)).all()
+            movies = self._session_cm.session.query(Movie).filter(Movie._id.in_(movie_ids)).all()
             return movies
 
     def get_movie_by_director(self, director: str) -> List[Movie]:
-        row = self._session_cm.execute('SELECT id FROM directors WHERE name = :director', {'director': director})
+        row = self._session_cm.session.execute('SELECT id FROM directors WHERE name = :director', {'director': director})
         if row is None:
             return []
         else:
             id = row[0]
-            movies = self._session_cm.query(Movie).filter(Movie._director_id == id).all()
+            movies = self._session_cm.session.query(Movie).filter(Movie._director_id == id).all()
             return movies
 
     def get_movie_by_year(self, release_year: int) -> List[Movie]:
-        movies = self._session_cm.query(Movie).filter(Movie._release_year == int(release_year)).all()
+        movies = self._session_cm.session.query(Movie).filter(Movie._release_year == int(release_year)).all()
         return movies
 
     def add_movie(self, movie: Movie):
@@ -153,26 +153,159 @@ class SqlAlchemyRepository(AbstractRepository):
             scm.commit()
 
     def get_genres(self) -> List[Genre]:
-        genres = self._session_cm.query(Genre).all()
+        genres = self._session_cm.session.query(Genre).all()
         return genres
 
     def get_actors(self) -> List[Actor]:
-        actors = self._session_cm.query(Actor).all()
+        actors = self._session_cm.session.query(Actor).all()
         return actors
 
     def get_directors(self) -> List[Director]:
-        directors = self._session_cm.query(Director).all()
+        directors = self._session_cm.session.query(Director).all()
         return directors
 
-def populate(session_factory, data_path, data_filename):
-    filename = os.path.join(data_path, data_filename)
-    movie_file_reader = MovieFileCSVReader(filename)
-    movie_file_reader.read_csv_file()
+def movie_record_generator(filename: str):
+    with open(filename, mode='r', encoding='utf-8-sig') as infile:
+        reader = csv.reader(infile)
 
-    session = session_factory()
+        # Read first line of the CSV file.
+        headers = next(reader)
 
-    for movie in movie_file_reader.dataset_of_movies:
-        session.add(movie)
+        # Read remaining rows from the CSV file.
+        for row in reader:
 
-    session.commit()
+            movie_data=[row[0], row[1], row[6], row[3], row[7], row[4]]
+
+            movie_data = [item.strip() for item in movie_data]
+
+            yield movie_data
+
+def genre_record_generator(filename: str):
+    with open(filename, mode='r', encoding='utf-8-sig') as infile:
+        reader = csv.reader(infile)
+
+        # Read first line of the CSV file.
+        headers = next(reader)
+
+        genre_set = set()
+
+        # Read remaining rows from the CSV file.
+        for row in reader:
+
+            genres = row[2].split(",")
+
+            for genre in genres:
+                genre_set.add(genre)
+
+        for genre in genre_set:
+
+            genre_data = [genre]
+
+            genre_data = [item.strip() for item in genre_data]
+
+            yield genre_data
+
+
+def actor_record_generator(filename: str):
+    with open(filename, mode='r', encoding='utf-8-sig') as infile:
+        reader = csv.reader(infile)
+
+        # Read first line of the CSV file.
+        headers = next(reader)
+
+        actor_set = set()
+
+        # Read remaining rows from the CSV file.
+        for row in reader:
+
+            actors = row[2].split(",")
+
+            for actor in actors:
+                actor_set.add(actor)
+
+        for actor in actor_set:
+            actor_data = [actor]
+
+            actor_data = [item.strip() for item in actor_data]
+
+            yield actor_data
+
+def director_record_generator(filename: str):
+    with open(filename, mode='r', encoding='utf-8-sig') as infile:
+        reader = csv.reader(infile)
+
+        # Read first line of the CSV file.
+        headers = next(reader)
+
+        director_set = set()
+
+        # Read remaining rows from the CSV file.
+        for row in reader:
+
+            directors = row[2].split(",")
+
+            for director in directors:
+                director_set.add(director)
+
+        for director in director_set:
+            director_data = [director]
+
+            director_data = [item.strip() for item in director_data]
+
+            yield director_data
+
+def movie_actor_record_generator(filename: str):
+    with open(filename, mode='r', encoding='utf-8-sig') as infile:
+        reader = csv.reader(infile)
+
+        # Read first line of the CSV file.
+        headers = next(reader)
+
+        director_set = set()
+
+        # Read remaining rows from the CSV file.
+        for row in reader:
+
+            directors = row[2].split(",")
+
+            for director in directors:
+                director_set.add(director)
+
+        for director in director_set:
+            director_data = [director]
+
+            director_data = [item.strip() for item in director_data]
+
+            yield director_data
+
+def populate(engine: Engine, data_path: str):
+    conn = engine.raw_connection()
+    cursor = conn.cursor()
+
+    insert_movies = """
+        INSERT INTO movies (
+        id, title, release_year, description, runtime_minutes, director)
+        VALUES (?, ?, ?, ?, ?, ?)"""
+    cursor.executemany(insert_movies, movie_record_generator(data_path))
+
+    insert_genres = """
+        INSERT INTO genres (
+        name)
+        VALUES (?)"""
+    cursor.executemany(insert_genres, genre_record_generator(data_path))
+
+    insert_actors = """
+        INSERT INTO actors (
+        name)
+        VALUES (?)"""
+    cursor.executemany(insert_actors, actor_record_generator(data_path))
+
+    insert_directors = """
+        INSERT INTO directors (
+        name)
+        VALUES (?)"""
+    cursor.executemany(insert_directors, director_record_generator(data_path))
+
+    conn.commit()
+    conn.close()
 
